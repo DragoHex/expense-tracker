@@ -1,20 +1,30 @@
 package cmd
 
 import (
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+
+	"github.com/DragoHex/expense-tracker/pkg/db"
+	"github.com/DragoHex/expense-tracker/pkg/model"
+	"github.com/DragoHex/expense-tracker/pkg/tracker"
 )
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "extr",
-	Short: "A CLI tool for personal expense tracking",
-	Long:  `A CLI tool for personal expense tracking`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
-}
+var (
+	ExpenseTracker *tracker.ExpenseTrackerImpl
+
+	// rootCmd represents the base command when called without any subcommands
+	rootCmd = &cobra.Command{
+		Use:   "extr",
+		Short: "A CLI tool for personal expense tracking",
+		Long:  `A CLI tool for personal expense tracking`,
+	}
+)
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -26,13 +36,33 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+	dbFile := filepath.Join("artifacts", "db", "data.db")
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.expense-tracker.yaml)")
+	// Create the DB if it doesn't exists
+	if _, err := os.Stat(dbFile); err != nil {
+		log.Println("db file doesn't exist")
+		log.Println("creating the db")
+		if err := os.MkdirAll(filepath.Dir(dbFile), os.ModePerm); err != nil {
+			log.Fatalf("Error creating directory: %v", err)
+		}
+	}
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// opne/initialise gorm DB
+	dbLite, err := gorm.Open(sqlite.Open(dbFile), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
+	if err != nil {
+		log.Fatalf("error in opening the db file: %s", err)
+		return
+	}
+
+	// To create DB table if it doensn't exist
+	err = dbLite.AutoMigrate(&model.Expense{})
+	if err != nil {
+		log.Fatalf("failed to migrate database schema: %v", err)
+	}
+
+	dbRepo := db.NewDBRepoImpl(dbLite)
+
+	ExpenseTracker = tracker.NewExpenseTrackerImpl(dbRepo)
 }
