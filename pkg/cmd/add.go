@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/DragoHex/expense-tracker/pkg/model"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +13,29 @@ var addCmd = &cobra.Command{
 	Short: "A command to add new expense",
 	Long:  `A command to add new expense`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		des, err := cmd.Flags().GetString("description")
+		if err != nil {
+			fmt.Printf("error in getting the flag value: %s\n", err)
+			return
+		}
+		cat, err := cmd.Flags().GetString("category")
+		if err != nil {
+			fmt.Printf("error in getting the flag value: %s\n", err)
+			return
+		}
+		amount, err := cmd.Flags().GetInt("amount")
+		if err != nil {
+			fmt.Printf("error in getting the flag value: %s\n", err)
+			return
+		}
+
+		exp, err := ExpenseTracker.CreateExpense(des, amount, model.StringToCatEnum(cat))
+		if err != nil {
+			fmt.Printf("error in adding expense: %s\n", err)
+			return
+		}
+		fmt.Printf("Expense added successfully (ID:%d)\n\n", exp.ID)
+		exp.Print()
 	},
 }
 
