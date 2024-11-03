@@ -8,6 +8,7 @@ The basic structure of a code following the pattern can be summarised as:
 
 ```mermaid
 classDiagram
+direction LR
 	Repository --> Model
 	Service --> Model
 	RepositoryImpl ..|> Repository

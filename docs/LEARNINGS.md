@@ -8,3 +8,6 @@
 - gorm tags can be used with the struct's definition to give directives.
 - By default gorm prints the queries in the logs, which can be silenced or configured using the following in `gorm.Open`.
 `&gorm.Config{Logger: logger.Default.LogMode(logger.Silent)}`
+
+## encoding/csv
+- For exporting slice of struct objects to a csv file. [CODE](../pkg/cmd/export.go)
