@@ -45,7 +45,7 @@ If only year is passed it will give summary for the whole year`,
 		var exps model.Expenses
 
 		// Fetch expense for a particular month
-		if !cmd.Flags().Changed("year") {
+		if !cmd.Flags().Changed("year") || (cmd.Flags().Changed("year") && cmd.Flags().Changed("month")) {
 			exps, err = ExpenseTracker.ListFilteredExpense(month, year)
 			if err != nil {
 				fmt.Printf("error in fetching the expenses: %s\n", err)
@@ -55,6 +55,8 @@ If only year is passed it will give summary for the whole year`,
 
 		// Fetch yearly expenses
 		if cmd.Flags().Changed("year") && !cmd.Flags().Changed("month") {
+			// unsetting month to get yearly expenses
+			month = 0
 			exps, err = ExpenseTracker.ListFilteredExpense(0, year)
 			if err != nil {
 				fmt.Printf("error in fetching the expenses: %s\n", err)
