@@ -1,5 +1,5 @@
 # expense-tracker
-A CLI tool for expense personal expense tracking
+A CLI tool for personal expense tracking.
 
 ## Add Expense
 Command to add expenses.
@@ -14,7 +14,7 @@ Following are the list of supported categories:
 - entertainment
 - uncategorised
 
-If not valid category is provided, it is set to `uncategorised`.
+If no valid category is provided, it is set to `uncategorised`.
 
 ## List Expenses
 Command to list existing expense entries.
@@ -50,11 +50,11 @@ Command to delete existing expense entry.
 
 ## Summary
 By default year is taken to be the current one.
-- Fetch total expenses of the current month
+- Fetch total expenses of the current month.
 ```shell
 ./extr summary
 ```
-- Fetch total expenses of an year
+- Fetch total expenses of an year.
 ```shell
 ./extr summary -y <year>
 ```
@@ -71,7 +71,7 @@ By default year is taken to be the current one.
 Bugetting is also supported for the expense tracker.
 A user can set a monthly budget.
 If the total expense of the month goes beyond the budget.
-User get warning after each new expense being added.
+User gets warning after each new expense being added.
 
 ## Setting a budget
 - If no month or year is mentioned, then the budget is set for the current month.
@@ -102,7 +102,7 @@ User get warning after each new expense being added.
 ```shell
 ./extr update budget update -a <amount>
 ```
-- To update budget entry a particular month. If year is not passed it is assumed to be current one.
+- To update budget entry for a particular month. If year is not passed it is assumed to be current one.
 ```shell
 ./extr update budget update -a <amount> -m <month> -y <year>
 ```
