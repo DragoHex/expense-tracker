@@ -17,6 +17,7 @@ import (
 
 var (
 	ExpenseTracker *tracker.ExpenseTrackerImpl
+	BudgetTracker  *tracker.BudgetRepoImpl
 
 	// rootCmd represents the base command when called without any subcommands
 	rootCmd = &cobra.Command{
@@ -56,13 +57,21 @@ func init() {
 		return
 	}
 
-	// To create DB table if it doensn't exist
+	// To create Expense DB table if it doensn't exist
 	err = dbLite.AutoMigrate(&model.Expense{})
 	if err != nil {
 		log.Fatalf("failed to migrate database schema: %v", err)
 	}
 
+	// To create Budget DB table if it doensn't exist
+	err = dbLite.AutoMigrate(&model.Budget{})
+	if err != nil {
+		log.Fatalf("failed to migrate database schema: %v", err)
+	}
+
 	dbRepo := db.NewDBRepoImpl(dbLite)
+	dbBudgetRepo := db.NewDBRepoBudgetImpl(dbLite)
 
 	ExpenseTracker = tracker.NewExpenseTrackerImpl(dbRepo)
+	BudgetTracker = tracker.NewBudgetRepoImpl(dbBudgetRepo)
 }
