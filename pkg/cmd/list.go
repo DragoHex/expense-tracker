@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -80,10 +81,8 @@ var listCmd = &cobra.Command{
 			cats := strings.Split(cat, ",")
 			var categoricalExpenses model.Expenses
 			for _, exp := range expenses {
-				for _, category := range cats {
-					if exp.Category == model.StringToCatEnum(strings.TrimSpace(category)) {
-						categoricalExpenses = append(categoricalExpenses, exp)
-					}
+				if slices.Contains(cats, exp.Category.String()) {
+					categoricalExpenses = append(categoricalExpenses, exp)
 				}
 			}
 			expenses = categoricalExpenses

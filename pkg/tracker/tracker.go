@@ -1,6 +1,7 @@
 package tracker
 
 import (
+	"github.com/DragoHex/expense-tracker/pkg/model"
 	expense "github.com/DragoHex/expense-tracker/pkg/model"
 )
 
@@ -23,7 +24,7 @@ func NewExpenseTrackerImpl(repo ExpenseRepository) *ExpenseTrackerImpl {
 
 // CreateExpense adds a new expense entry
 func (s *ExpenseTrackerImpl) CreateExpense(des string, amount, cat int) (*expense.Expense, error) {
-	exp := &expense.Expense{Description: des, Amount: amount, Category: cat}
+	exp := &expense.Expense{Description: des, Amount: amount, Category: model.Category(cat)}
 
 	err := s.repo.Create(exp)
 	if err != nil {
@@ -46,7 +47,7 @@ func (s *ExpenseTrackerImpl) UpdateExpense(id int, des string, amount int, cat i
 
 	exp.Description = des
 	exp.Amount = amount
-	exp.Category = cat
+	exp.Category = model.Category(cat)
 
 	return s.repo.Update(exp)
 }
@@ -59,4 +60,9 @@ func (s *ExpenseTrackerImpl) DeleteExpense(id int) error {
 // ListExpense fetches all the expenses
 func (s *ExpenseTrackerImpl) ListExpense() (expense.Expenses, error) {
 	return s.repo.List()
+}
+
+// ListMonthyExpense fetches expenses of the particular month
+func (s *ExpenseTrackerImpl) ListFilteredExpense(m, y int) (expense.Expenses, error) {
+	return s.repo.ListFiltered(m, y)
 }

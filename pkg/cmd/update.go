@@ -63,7 +63,7 @@ var updateCmd = &cobra.Command{
 			ID:          id,
 			Description: des,
 			Amount:      amount,
-			Category:    model.StringToCatEnum(cat),
+			Category:    model.Category(model.StringToCatEnum(cat)),
 		}.Print()
 	},
 }

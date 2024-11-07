@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/DragoHex/expense-tracker/pkg/model"
 	"github.com/spf13/cobra"
@@ -29,11 +30,30 @@ var addCmd = &cobra.Command{
 			return
 		}
 
+		if amount < 0 {
+			fmt.Println("expense cannot be negative")
+			return
+		}
+
 		exp, err := ExpenseTracker.CreateExpense(des, amount, model.StringToCatEnum(cat))
 		if err != nil {
 			fmt.Printf("error in adding expense: %s\n", err)
 			return
 		}
+
+		t := time.Now()
+		month := int(t.Month())
+		year := t.Year()
+
+		exps, _ := ExpenseTracker.ListFilteredExpense(month, year)
+		bud, _ := BudgetTracker.GetBudget(month, year)
+
+		if exps.Total() > bud.Amount {
+			fmt.Println()
+			fmt.Printf("\033[0;31mEpenses has crossed this month's budget: %d by %d \033[0m\n", bud.Amount, exps.Total()-bud.Amount)
+			fmt.Println()
+		}
+
 		fmt.Printf("Expense added successfully (ID:%d)\n\n", exp.ID)
 		exp.Print()
 	},
