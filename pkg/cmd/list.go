@@ -75,6 +75,14 @@ var listCmd = &cobra.Command{
 				}
 			}
 			expenses = yearlyExpenses
+		} else {
+			var yearlyExpenses model.Expenses
+			for _, exp := range expenses {
+				if exp.CreatedAt.Year() == time.Now().Year() {
+					yearlyExpenses = append(yearlyExpenses, exp)
+				}
+			}
+			expenses = yearlyExpenses
 		}
 
 		if cat != "" {

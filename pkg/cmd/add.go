@@ -48,10 +48,13 @@ var addCmd = &cobra.Command{
 		exps, _ := ExpenseTracker.ListFilteredExpense(month, year)
 		bud, _ := BudgetTracker.GetBudget(month, year)
 
-		if exps.Total() > bud.Amount {
-			fmt.Println()
-			fmt.Printf("\033[0;31mEpenses has crossed this month's budget: %d by %d \033[0m\n", bud.Amount, exps.Total()-bud.Amount)
-			fmt.Println()
+		if bud != nil {
+			if exps.Total() > bud.Amount {
+				fmt.Println()
+				fmt.Printf("\033[0;31mEpenses has crossed this month's budget: %d by %d \033[0m\n", bud.Amount, exps.Total()-bud.Amount)
+				fmt.Println()
+			}
+
 		}
 
 		fmt.Printf("Expense added successfully (ID:%d)\n\n", exp.ID)
