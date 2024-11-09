@@ -13,6 +13,17 @@
 ## encoding/csv
 - For exporting slice of struct objects to a csv file. [CODE](../pkg/cmd/export.go)
 
+## SQLITE
+- While using following go packages `gorm.io/driver/sqlite` & `github.com/mattn/go-sqlite3`, both internally uses cgo to interface with the SQLite C library.
+They interact with the sqlite installed on the user system. This would require the user to have sqlite installed on their system.
+But that may not be the case.
+- One option that we have to **static linking**, which compile SQLite directly into your Go binary using `cgo`, which then won't need user to install sqlite separately.
+- If we have `CGO_ENABLED=1` during the build then sqlite will be compiled with the binary itself. Although setting `CGO_ENABLED=1` is sufficent, following is an explicit way to ensure static linking works every time.
+```shell
+CGO_ENABLED=1 go build -tags "sqlite_omit_load_extension" -ldflags "-extldflags '-static'" your_program.go
+```
+- For building cross platform binaries using cgo we may need to use containers for individual platform becaue of missing clibraries.
+
 ## Miscellaneous
 - If only month and year are to be saved in a `time.Time` instance. This will set the day as `1` and time as midnight.
 ```go
