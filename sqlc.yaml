@@ -1,0 +1,40 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "./pkgc/query"
+    schema: "./pkgc/migrations"
+    gen:
+      go:
+        # emit_prepared_queries: true
+        emit_json_tags: true
+        package: db
+        out: "./pkgc/db"
+        overrides:
+          - column: expense.id
+            go_type: "int"
+          - column: expense.description
+            go_type: "string"
+          - column: expense.category
+            go_type: "int"
+          - column: expense.amount
+            go_type: "int"
+          - column: expense.created_at
+            go_type:
+              import: "time"
+              type: "Time"
+          - column: expense.updated_at
+            go_type:
+              import: "time"
+              type: "Time"
+          - column: budget.month_year
+            go_type: "string"
+          - column: budget.amount
+            go_type: "int"
+          - column: budget.created_at
+            go_type:
+              import: "time"
+              type: "Time"
+          - column: budget.updated_at
+            go_type:
+              import: "time"
+              type: "Time"

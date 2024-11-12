@@ -39,6 +39,7 @@ func (s *ExpenseTrackerImpl) GetExpense(id int) (*expense.Expense, error) {
 	return s.repo.Read(id)
 }
 
+// UpdateExpense updates an existing expenses
 func (s *ExpenseTrackerImpl) UpdateExpense(id int, des string, amount int, cat int) error {
 	exp, err := s.repo.Read(id)
 	if err != nil {
