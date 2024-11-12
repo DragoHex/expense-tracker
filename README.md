@@ -1,6 +1,11 @@
 # expense-tracker
 A CLI tool for personal expense tracking.
 
+## Build
+- To build the ORM based binary run `make bin`.
+- To build [SQLC](https://docs.sqlc.dev/en/latest) based binary run `make bin-sqlc`.
+- Binaries are stored in `artifacts` directory.
+
 ## Add Expense
 Command to add expenses.
 ```shell

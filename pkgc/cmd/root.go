@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"database/sql"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,12 +11,12 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"github.com/DragoHex/expense-tracker/pkg/db"
-	"github.com/DragoHex/expense-tracker/pkg/model"
-	"github.com/DragoHex/expense-tracker/pkg/tracker"
+	"github.com/DragoHex/expense-tracker/pkgc/db"
+	"github.com/DragoHex/expense-tracker/pkgc/tracker"
 )
 
 var (
+	dbQueries      *db.Queries
 	ExpenseTracker *tracker.ExpenseTrackerImpl
 	BudgetTracker  *tracker.BudgetRepoImpl
 
@@ -48,8 +49,8 @@ func init() {
 		}
 	}
 
-	// open/initialise gorm DB
-	dbLite, err := gorm.Open(sqlite.Open(dbFile), &gorm.Config{
+	// initialise gorm DB
+	dbObj, err := gorm.Open(sqlite.Open(dbFile), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
 	})
 	if err != nil {
@@ -57,21 +58,45 @@ func init() {
 		return
 	}
 
-	// To create Expense DB table if it doensn't exist
-	err = dbLite.AutoMigrate(&model.Expense{})
+	dbLite, err := dbObj.DB()
 	if err != nil {
-		log.Fatalf("failed to migrate database schema: %v", err)
+		log.Fatalf("error in getting *sql.DB from *gorm.DB: %s", err)
+		return
+	}
+	err = initTables(dbLite)
+	if err != nil {
+		log.Fatalf("error in intialising the tables: %s", err)
+		return
 	}
 
-	// To create Budget DB table if it doensn't exist
-	err = dbLite.AutoMigrate(&model.Budget{})
+	ExpenseTracker = tracker.NewExpenseTrackerImpl(dbLite)
+	BudgetTracker = tracker.NewBudgetRepoImpl(dbLite)
+}
+
+func initTables(db *sql.DB) error {
+	// create budget table
+	createTableQuery := `
+CREATE TABLE IF NOT EXISTS budget (
+    month_year PRIMARY KEY,
+    amount INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`
+	_, err := db.Exec(createTableQuery)
 	if err != nil {
-		log.Fatalf("failed to migrate database schema: %v", err)
+		return err
 	}
 
-	dbRepo := db.NewDBRepoImpl(dbLite)
-	dbBudgetRepo := db.NewDBRepoBudgetImpl(dbLite)
-
-	ExpenseTracker = tracker.NewExpenseTrackerImpl(dbRepo)
-	BudgetTracker = tracker.NewBudgetRepoImpl(dbBudgetRepo)
+	// create expense table
+	createTableQuery = `
+CREATE TABLE IF NOT EXISTS expense (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	description TEXT,
+	amount INTEGER,
+	category INTEGER,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);`
+	_, err = db.Exec(createTableQuery)
+	return err
 }

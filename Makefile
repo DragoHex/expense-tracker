@@ -1,8 +1,13 @@
 BINARY_NAME=extr
+SQLC_BINARY_NAME=extr-sqlc
 
 .PHONY: bin
 bin:
 	CGO_ENABLED=1 go build -o artifacts/${BINARY_NAME} cmd/main.go
+
+.PHONY: bin-sqlc
+bin-sqlc:
+	CGO_ENABLED=1 go build -o artifacts/${SQLC_BINARY_NAME} cmd/extr-sqlc/main.go
 
 .PHONY: run
 run:
@@ -40,6 +45,7 @@ clean-container:
 		docker rm $(CONTAINER_NAME); \
 	fi
 	@docker rmi $(IMAGE_NAME)
+
 .PHONY: clean
 clean:
 	go clean

@@ -24,6 +24,20 @@ CGO_ENABLED=1 go build -tags "sqlite_omit_load_extension" -ldflags "-extldflags 
 ```
 - For building cross platform binaries using cgo we may need to use containers for individual platform becaue of missing clibraries.
 
+## SQLC
+sqlc generates fully type-safe idiomatic Go code from SQL. Here’s how it works:
+1. We write SQL queries.
+2. We run sqlc to generate Go code that presents type-safe interfaces to those queries. configurations can be done in `sqlc.yaml` file.
+3. We write application code that calls the methods sqlc generated.
+
+This has support for postgres, mysql & sqlite.
+Support for SQLite is not up to the par.
+When working with SQLite to get proper types in the generated code,
+it's better to override them column wise in the `sqlc.yaml` file.
+
+**NOTE:** sqlc doesn't close the transaction object itself. So developer need to handle the rollback in case of any error, and commit in case of success.
+So, after auto generating code using sqlc, it's better to maintain a service layer that handles the transactions.
+
 ## Miscellaneous
 - If only month and year are to be saved in a `time.Time` instance. This will set the day as `1` and time as midnight.
 ```go

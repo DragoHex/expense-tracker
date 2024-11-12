@@ -12,7 +12,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/karalabe/xgo v0.0.0-20191115072854-c5ccff8648a7 // indirect
-	github.com/mattn/go-sqlite3 v1.14.22 // indirect
+	github.com/mattn/go-sqlite3 v1.14.24 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/text v0.19.0 // indirect
 	gorm.io/driver/sqlite v1.5.6 // indirect
